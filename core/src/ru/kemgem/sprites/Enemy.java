@@ -5,14 +5,17 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.Random;
+
+import ru.kemgem.mainClass;
+
 /**
  * Created by Danil on 21.11.2015.
  */
 public class Enemy {
-    public static final int TUBE_WIDTH = 52;
+    public static final int ENEMY_WIDTH = 52;
 
     private static final int FLUCTUATION = 130;
-    private static final int TUBE_GAP = 100;
+    private static final int ENEMY_GAP = 100;
     private static final int LOWEST_OPENING = 120;
 
     private Texture enemy;
@@ -29,17 +32,17 @@ public class Enemy {
     }
 
     public Enemy(float x){
-        enemy = new Texture("enemy.jpg");
+        enemy = new Texture("enemy.png");
         rand = new Random();
 
-        posEnemy = new Vector2(x, rand.nextInt(FLUCTUATION) + TUBE_GAP + LOWEST_OPENING);
+        posEnemy = new Vector2(x, mainClass.HEIGHT/4);
 
         boundsEnemy = new Rectangle(posEnemy.x, posEnemy.y, enemy.getWidth(), enemy.getHeight());
 
     }
 
     public void reposition(float x){
-        posEnemy.set(x, rand.nextInt(FLUCTUATION) + TUBE_GAP + LOWEST_OPENING);
+        posEnemy.set(x, mainClass.HEIGHT/4);
         boundsEnemy.setPosition(posEnemy.x, posEnemy.y);
     }
 
