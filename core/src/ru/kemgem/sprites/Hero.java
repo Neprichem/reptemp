@@ -56,7 +56,7 @@ public class Hero {
         heroAnimation = new Animation(0.025f, heroFrames);
        // spriteBatch = new SpriteBatch(); // инициализация для рисования кадра
         stateTime = 0f; // обновление времени
-        bounds = new Rectangle(x, y, hero.getWidth(), hero.getHeight());
+        bounds = new Rectangle(x, y, hero.getWidth()/FRAME_COLS, hero.getHeight()/FRAME_ROWS);
     }
 
     public Vector3 getPosition() {
@@ -67,19 +67,21 @@ public class Hero {
         return currentFrame;
     }
 
+    //обработчик движения
     public void update(float dt){
         if (position.y > 0)
-            velosity.add(0, GRAVITY, 0);
+            velosity.add(0, GRAVITY, 0);//действие гравитации
         velosity.scl(dt);
-        position.add(MOVEMENT * dt, velosity.y, 0);
+        position.add(MOVEMENT * dt, velosity.y, 0);//изменение координат движения
         if (position.y < mainClass.HEIGHT/4)
             position.y = mainClass.HEIGHT/4;
         velosity.scl(1 / dt);
         bounds.setPosition(position.x, position.y);
-        stateTime += Gdx.graphics.getDeltaTime(); // #15
-        currentFrame = heroAnimation.getKeyFrame(stateTime, true); // #16
+        //stateTime += Gdx.graphics.getDeltaTime(); // #15
+        ///currentFrame = heroAnimation.getKeyFrame(stateTime, true); // #16
     }
 
+    //Прыжок
     public void jump(){
         velosity.y = 250;
     }
@@ -87,18 +89,11 @@ public class Hero {
     public Rectangle getBounds(){
         return bounds;
     }
-    /*public void render() {
 
-
-        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
-
+    //мутод отрисовки героя
+    public void drawHero(SpriteBatch sb) {
         stateTime += Gdx.graphics.getDeltaTime(); // #15
-        currentFrame = walkAnimation.getKeyFrame(stateTime, true); // #16
-        spriteBatch.begin();
-        spriteBatch.draw(currentFrame, 50, 50); // #17
-        spriteBatch.end();
-
+        currentFrame = heroAnimation.getKeyFrame(stateTime, true); // #16
+        sb.draw(currentFrame, position.x, position.y); // #17
     }
-    */
-
 }
