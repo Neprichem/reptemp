@@ -29,13 +29,11 @@ public class MenuState extends State {
         if(Gdx.input.justTouched()){
             gsm.set(new PlayState(gsm));
         }
-
     }
 
     @Override
     public void update(float dt) {
         handleInput();
-
     }
 
     @Override

@@ -42,7 +42,7 @@ public class Temp extends ApplicationAdapter {
             camera.unproject(touchPos);
             //bucket.x = (int) (touchPos.x -64 / 2);
             //bullets.add(new Bullet(hero.getPosition(), Gdx.input.getX(),Gdx.input.getY()));
-            bullets.add(new Bullet( touchPos.x , touchPos.y ));
+           // bullets.add(new Bullet( touchPos.x , touchPos.y ));
         }
 
     }
