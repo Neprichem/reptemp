@@ -2,16 +2,17 @@ package ru.kemgem.sprites;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import javafx.animation.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation;
 
 /**
  * Created by User on 23.11.2015.
  */
-/*
+
 public class Animator implements ApplicationListener {
     private static final int FRAME_COLS = 6; // #1
     private static final int FRAME_ROWS = 5; // #2
@@ -31,7 +32,7 @@ public class Animator implements ApplicationListener {
 
     @Override
     public void create() {
-        walkSheet = new Texture(Gdx.files.internal("animation_sheet.png")); // #9
+        walkSheet = new Texture(Gdx.files.internal("sprite-animation4.png")); // #9
         TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth()/FRAME_COLS, walkSheet.getHeight()/FRAME_ROWS); // #10
         walkFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
         int index = 0;
@@ -52,7 +53,7 @@ public class Animator implements ApplicationListener {
 
     @Override
     public void render() {
-        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT); // #14
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // #14
         stateTime += Gdx.graphics.getDeltaTime(); // #15
         currentFrame = walkAnimation.getKeyFrame(stateTime, true); // #16
         spriteBatch.begin();
@@ -75,4 +76,3 @@ public class Animator implements ApplicationListener {
 
     }
 }
-*/

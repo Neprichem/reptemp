@@ -148,7 +148,8 @@ public class PlayState extends State {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         sb.draw(bg, camera.position.x - (camera.viewportWidth / 2), 0);
-        sb.draw(hero.getHero(), hero.getPosition().x, hero.getPosition().y);
+
+        sb.draw(hero.getHeroRegion(), hero.getPosition().x, hero.getPosition().y);
         /*
         for (Tube tube : tubes) {
             sb.draw(tube.getTopTube(), tube.getPosBotTube().x, tube.getPosTopTube().y);
