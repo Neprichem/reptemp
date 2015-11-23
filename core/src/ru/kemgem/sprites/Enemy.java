@@ -49,4 +49,9 @@ public class Enemy {
     public boolean collides(Rectangle player){
         return player.overlaps(boundsEnemy);
     }
+
+    public void dispose()
+    {
+        enemy.dispose();
+    }
 }
