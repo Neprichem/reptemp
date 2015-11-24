@@ -15,7 +15,7 @@ import ru.kemgem.mainClass;
  */
 public class Hero {
     //константы
-    private static final int MOVEMENT = 100;//скорость
+    private static final int MOVEMENT = 50;//скорость
     private static final int GRAVITY = -15;//гравитация
     private static final int FRAME_COLS = 6;//справйты по вертикали
     private static final int FRAME_ROWS = 5;//по горизонтали
@@ -24,11 +24,10 @@ public class Hero {
     private Vector3 velosity;//вектор изменения позиции
     private Rectangle bounds;//кубическая проекция
 
-
-    Animation heroAnimation;//анимация
+    private Animation heroAnimation;//анимация
     private Texture hero;//содержит все спрайты в виде одного изображения
 
-    TextureRegion[] heroFrames;//массив всех спрайтов
+    private TextureRegion[] heroFrames;//массив всех спрайтов
     TextureRegion currentFrame;//текущий кадр
 
     float stateTime;//время с начала анимации
@@ -95,5 +94,10 @@ public class Hero {
         stateTime += Gdx.graphics.getDeltaTime(); // #15
         currentFrame = heroAnimation.getKeyFrame(stateTime, true); // #16
         sb.draw(currentFrame, position.x, position.y); // #17
+    }
+
+    public boolean collides(Rectangle player)
+    {
+        return player.overlaps(bounds);
     }
 }

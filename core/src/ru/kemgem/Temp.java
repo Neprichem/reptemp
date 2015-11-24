@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -18,6 +19,8 @@ public class Temp extends ApplicationAdapter {
     SpriteBatch batch;
     Texture img;
 
+    BitmapFont font;
+    int dropsGatchered;
     Vector3 touchPos;
 
     private Array<Bullet> bullets;
@@ -31,6 +34,10 @@ public class Temp extends ApplicationAdapter {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
 
+
+        font = new BitmapFont();
+       // dropsGatchered = 0;
+
         touchPos = new Vector3();
         bullets = new Array<Bullet>();
     }
@@ -42,7 +49,8 @@ public class Temp extends ApplicationAdapter {
             camera.unproject(touchPos);
             //bucket.x = (int) (touchPos.x -64 / 2);
             //bullets.add(new Bullet(hero.getPosition(), Gdx.input.getX(),Gdx.input.getY()));
-           // bullets.add(new Bullet( touchPos.x , touchPos.y ));
+            bullets.add(new Bullet(new Vector3(0,0,0), touchPos.x , touchPos.y ));
+            dropsGatchered++;
         }
 
     }
@@ -55,6 +63,8 @@ public class Temp extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         handleInput();
         batch.begin();
+        font.draw(batch, "Drops Collected: " + dropsGatchered, camera.position.x - (camera.viewportWidth / 2) + 30, mainClass.HEIGHT - 30);
+
         batch.draw(img, 0, 0);
         for (Bullet bullet : bullets) {
             batch.draw(bullet.getBullet(), bullet.getPosition().x, bullet.getPosition().y);
