@@ -168,7 +168,7 @@ public class PlayState extends State {
             EnemyBullet bullet = iteb.next();
             if (hero.collides(bullet.getBounds()))
             {
-                hero.death();
+               // hero.death();
                 bullet.dispose();
                 iteb.remove();
             }
@@ -232,20 +232,16 @@ public class PlayState extends State {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         stateTime += Gdx.graphics.getDeltaTime(); // #15
         currentFrame = bgAnimation.getKeyFrame(stateTime, true); // #16
-        //sb.draw(currentFrame, position.x, position.y); // #17
-
-
-
-
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
 
-       // sb.draw(bg, camera.position.x - (camera.viewportWidth / 2), 0);
-        sb.draw(currentFrame, camera.position.x - (camera.viewportWidth / 2), 0, camera.position.x + (camera.viewportWidth / 2), mainClass.HEIGHT);
-        font.draw(sb, "Drops Collected: " + dropsGatchered,  camera.position.x + (camera.viewportWidth / 2) - 130, mainClass.HEIGHT - 24);
+        sb.draw(currentFrame, camera.position.x - (camera.viewportWidth / 2), 0,
+                camera.position.x + (camera.viewportWidth / 2), mainClass.HEIGHT);
+        font.draw(sb, "Drops Collected: " + dropsGatchered,  camera.position.x +
+                (camera.viewportWidth / 2) - 130, mainClass.HEIGHT - 24);
         sb.draw(jump, camera.position.x - (camera.viewportWidth / 2) + 15, 15, 94, 94);
-        hero.drawHero(sb);
 
+        hero.drawHero(sb);
         hero.drawHeroLive(sb, camera.position.x - (camera.viewportWidth / 2));
 
         for (Bullet bullet : bullets) {
@@ -265,12 +261,12 @@ public class PlayState extends State {
             }
         }
 
-
         for (Swordsman swordsman : swordsmans) {
             sb.draw(swordsman.getTexture(), swordsman.getPosition().x, swordsman.getPosition().y);
         }
         for (Shooter sh : shooters) {
-            sb.draw(sh.getTexture(), sh.getPosition().x, sh.getPosition().y);
+           // sb.draw(sh.getTexture(), sh.getPosition().x, sh.getPosition().y);
+            sh.drawShooter(sb);
         }
         sb.end();
     }
