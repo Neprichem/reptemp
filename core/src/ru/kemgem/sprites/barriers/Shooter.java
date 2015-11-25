@@ -51,16 +51,22 @@ public class Shooter extends Enemy {
 
     public Shooter(float x, float y, int _type) {
         super(x, y);
+        type = 1;
         enemy = new Texture("shooter.png");
         position = new Vector3(x, y, 0);
         type = _type;
 
-        bounds = new Rectangle(position.x,position.y, enemy.getWidth(), enemy.getHeight());
-        TextureRegion[][] tmp = TextureRegion.split(enemy, enemy.getWidth()/FRAME_COLS, enemy.getHeight()/FRAME_ROWS); // #10
+        bounds = new Rectangle(position.x, position.y, enemy.getWidth(), enemy.getHeight());
+
+        TextureRegion[][] tmp = TextureRegion.split(enemy, enemy.getWidth()/FRAME_COLS,
+                enemy.getHeight()/FRAME_ROWS); // #10
+
         shooterFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
         int index = 0;
-        for (int j = 0; j < FRAME_COLS; j++) {
-            shooterFrames[index++] = tmp[1][j];
+        for (int i = 0; i < FRAME_ROWS; i++) {
+            for (int j = 0; j < FRAME_COLS; j++) {
+                shooterFrames[index++] = tmp[i][j];
+            }
         }
         shooterAnimation = new Animation(0.025f, shooterFrames); // #1
         spriteBatch = new SpriteBatch();
@@ -82,6 +88,11 @@ public class Shooter extends Enemy {
         stateTime += Gdx.graphics.getDeltaTime(); // #15
         currentFrame = shooterAnimation.getKeyFrame(stateTime, true); // #16
         sb.draw(currentFrame, position.x, position.y); // #17
+    }
+
+    public void addHigh(HighEnemy he)
+    {
+        position.set(position.x, he.getTexture().getHeight() + 50, 0);
     }
 
     /*

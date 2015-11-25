@@ -23,7 +23,7 @@ public class EnemyBullet {
     public EnemyBullet(Vector3 X, float _x, float _y)
     {
         //заполнение координаь
-        position = new Vector3(X.x, X.y, 0);
+        position = new Vector3(X);
         velosity = new Vector3(0, 0, 0);
 
         bullet = new Texture("bullet.png");//текстура

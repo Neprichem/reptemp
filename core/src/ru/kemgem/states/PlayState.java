@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -18,6 +19,7 @@ import ru.kemgem.sprites.Bullet;
 import ru.kemgem.sprites.EnemyBullet;
 import ru.kemgem.sprites.Hero;
 import ru.kemgem.sprites.barriers.Enemy;
+import ru.kemgem.sprites.barriers.HighEnemy;
 import ru.kemgem.sprites.barriers.Shooter;
 import ru.kemgem.sprites.barriers.Swordsman;
 
@@ -38,6 +40,7 @@ public class PlayState extends State {
     private Array<Shooter> shooters;
     private Array<Bullet> bullets;
     private Array<EnemyBullet> enemyBullets;
+    private Array<HighEnemy> highEnemies;
 
     Vector3 touchPos;
 
@@ -49,6 +52,8 @@ public class PlayState extends State {
     SpriteBatch spriteBatch;
     TextureRegion currentFrame;
 
+    private int rand;
+
     float stateTime;
 
     public PlayState(GameStateManager gsm) {
@@ -56,6 +61,8 @@ public class PlayState extends State {
         touchPos = new Vector3();
         hero = new Hero(120, mainClass.HEIGHT/4);
         camera.setToOrtho(false, mainClass.WIDTH, mainClass.HEIGHT);
+
+        rand  = MathUtils.random(0, 5);
 
         bg = new Texture("bgf_1-3_2.jpg");
         TextureRegion[][] tmp = TextureRegion.split(bg, bg.getWidth()/FRAME_COLS, bg.getHeight()/FRAME_ROWS); // #10
@@ -79,6 +86,7 @@ public class PlayState extends State {
         bullets = new Array<Bullet>();
         shooters = new Array<Shooter>();
         enemyBullets = new Array<EnemyBullet>();
+        highEnemies = new Array<HighEnemy>();
 
         for (int i = 0; i < ENEMY_COUNT; i++)
         {
@@ -87,17 +95,20 @@ public class PlayState extends State {
 
     }
 
-
-
     private void spawnEnemy(float x, float y) {
         Swordsman enemy = new Swordsman(x, y);
         swordsmans.add(enemy);
         lastDropTime = TimeUtils.nanoTime();
     }
 
-    private void spawnShooter(float x, float y) {
-        Shooter sh = new Shooter(x, y);
+    private void spawnShooter(float x, float y, int type) {
+        Shooter sh = new Shooter(x, y, type);
         shooters.add(sh);
+        lastDropTime = TimeUtils.nanoTime();
+    }
+
+    private void spawnHighEnemy(float x, float y, int type) {
+        highEnemies.add(new HighEnemy(new Vector3(x, y, 0), type));
         lastDropTime = TimeUtils.nanoTime();
     }
 
@@ -156,7 +167,7 @@ public class PlayState extends State {
         while (itb.hasNext())
         {
             Bullet b = itb.next();
-            if (b.collidesSwordsman(swordsmans) || b.collidesShooter(shooters))
+            if (b.collidesSwordsman(swordsmans) || b.collidesShooter(shooters) || b.collidesHighEnemy(highEnemies))
             {
                 b.dispose();
                 itb.remove();
@@ -254,8 +265,24 @@ public class PlayState extends State {
 
         if(TimeUtils.nanoTime() - lastDropTime > 1000000000)
         {
-            spawnShooter(hero.getPosition().x + mainClass.WIDTH + 50, mainClass.HEIGHT / 4);
-            spawnEnemy(hero.getPosition().x + mainClass.WIDTH, mainClass.HEIGHT/4);
+            switch (rand)
+            {
+                case 1:
+                    spawnShooter(hero.getPosition().x + mainClass.WIDTH + 50, mainClass.HEIGHT / 4, 1);
+                    break;
+                case 0:
+                    spawnEnemy(hero.getPosition().x + mainClass.WIDTH, mainClass.HEIGHT / 4);
+                    break;
+                case 2:
+                    spawnShooter(hero.getPosition().x + mainClass.WIDTH + 50, mainClass.HEIGHT / 4, 2);
+                    break;
+                case 3:
+                    spawnHighEnemy(hero.getPosition().x + mainClass.WIDTH + 50, mainClass.HEIGHT / 4, 1);
+                    break;
+                case 4:
+                    spawnHighEnemy(hero.getPosition().x + mainClass.WIDTH + 50, mainClass.HEIGHT / 4, 2);
+                    break;
+            }
             for (Shooter shooter : shooters) {
                 shooter.shot(enemyBullets, hero);
             }
@@ -268,7 +295,15 @@ public class PlayState extends State {
            // sb.draw(sh.getTexture(), sh.getPosition().x, sh.getPosition().y);
             sh.drawShooter(sb);
         }
+        for (HighEnemy he : highEnemies) {
+            // sb.draw(sh.getTexture(), sh.getPosition().x, sh.getPosition().y);
+            he.drawHighEnemy(sb);
+        }
+
         sb.end();
+        rand = 4;
+       // rand  = MathUtils.random(0, 5);
+
     }
 
     @Override

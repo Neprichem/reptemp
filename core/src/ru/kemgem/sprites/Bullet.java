@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.Iterator;
 
+import ru.kemgem.sprites.barriers.HighEnemy;
 import ru.kemgem.sprites.barriers.Shooter;
 import ru.kemgem.sprites.barriers.Swordsman;
 
@@ -23,6 +24,8 @@ public class Bullet {
     private Rectangle bounds; // квадратная проекция
     private float angle;//угол
     private Texture bullet;
+
+  //  Sound enemyDis = Gdx.audio.newSound(Gdx.files.internal("data/Explosion14.wav"));
 
     //конструктор класса, на вход координаты начала полета
     //и координаты конечнего направления
@@ -98,6 +101,26 @@ public class Bullet {
         return false;
     }
 
+    public boolean collidesHighEnemy(Array<HighEnemy> enemys)
+    {
+        Iterator<HighEnemy> ithe = enemys.iterator();
 
-    public void dispose() { bullet.dispose(); }
+        while (ithe.hasNext())
+        {
+            HighEnemy sh = ithe.next();
+            if (sh.getShooter().collides(bounds))
+            {
+                sh.death();
+                ithe.remove();
+              //  enemyDis.play(1.0f);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void dispose() {
+        bullet.dispose();
+        //enemyDis.dispose();
+    }
 }
