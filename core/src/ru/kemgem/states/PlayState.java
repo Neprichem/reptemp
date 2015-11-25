@@ -3,6 +3,7 @@ package ru.kemgem.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -10,15 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
 import java.util.Iterator;
-
 
 import ru.kemgem.mainClass;
 import ru.kemgem.sprites.Bullet;
@@ -63,8 +56,10 @@ public class PlayState extends State {
         touchPos = new Vector3();
         hero = new Hero(120, mainClass.HEIGHT/4);
         camera.setToOrtho(false, mainClass.WIDTH, mainClass.HEIGHT);
+
         bg = new Texture("bgf_1-3_2.jpg");
         TextureRegion[][] tmp = TextureRegion.split(bg, bg.getWidth()/FRAME_COLS, bg.getHeight()/FRAME_ROWS); // #10
+
         bgFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
         int index = 0;
         for (int i = 0; i < FRAME_ROWS; i++) {
@@ -75,6 +70,7 @@ public class PlayState extends State {
         bgAnimation = new Animation(0.150f, bgFrames); // #11
         spriteBatch = new SpriteBatch(); // #12
         stateTime = 0f; // #13
+
         jump = new Texture("ButtonJump.png");
 
         font = new BitmapFont();
@@ -245,7 +241,7 @@ public class PlayState extends State {
         sb.begin();
 
        // sb.draw(bg, camera.position.x - (camera.viewportWidth / 2), 0);
-        sb.draw(currentFrame, camera.position.x - (camera.viewportWidth / 2), 0);
+        sb.draw(currentFrame, camera.position.x - (camera.viewportWidth / 2), 0, camera.position.x + (camera.viewportWidth / 2), mainClass.HEIGHT);
         font.draw(sb, "Drops Collected: " + dropsGatchered,  camera.position.x + (camera.viewportWidth / 2) - 130, mainClass.HEIGHT - 24);
         sb.draw(jump, camera.position.x - (camera.viewportWidth / 2) + 15, 15, 94, 94);
         hero.drawHero(sb);
