@@ -118,72 +118,64 @@ public class PlayState extends State {
         }
     }
 
-    //меттод обработки коллизий
-
-    //на переработку
-    //-------------------------------------------------------------------------------------------------------------------------------
-    private void collides()
+    //методы обработки коллизий
+//--------------------------------------------------------------------------------------------------
+    private void collidesBullet()
     {
-        Iterator<Swordsman> iterEnemy = swordsmans.iterator();
-        Iterator<Bullet> iterBullet = bullets.iterator();
-        Iterator<EnemyBullet> ieb = enemyBullets.iterator();
-        Iterator<Shooter> is = shooters.iterator();
-
-        while (ieb.hasNext())
+        Iterator<Bullet> itb = bullets.iterator();
+        Iterator<EnemyBullet> iteb = enemyBullets.iterator();
+        while (itb.hasNext())
         {
-            EnemyBullet bullet = ieb.next();
+            Bullet b = itb.next();
+            if (b.collidesSwordsman(swordsmans) || b.collidesShooter(shooters))
+            {
+                b.dispose();
+                itb.remove();
+                dropsGatchered++;
+            }
+        }
+        while (iteb.hasNext())
+        {
+            EnemyBullet bullet = iteb.next();
             if (hero.collides(bullet.getBounds()))
             {
-               // gsm.set(new PlayState(gsm));
+                hero.death();
+                bullet.dispose();
+                iteb.remove();
             }
         }
 
-        while (iterEnemy.hasNext())
+    }
+
+    private void collidesEnemy() {
+        Iterator<Swordsman> itsw = swordsmans.iterator();
+        Iterator<Shooter> itsh = shooters.iterator();
+
+        while (itsw.hasNext())
         {
-            Swordsman swordsman = iterEnemy.next();
+            Swordsman swordsman = itsw.next();
             if (camera.position.x - (camera.viewportWidth / 2) > swordsman.getPosition().x + swordsman.getTexture().getWidth())
             {
                 gsm.set(new PlayState(gsm));
             }
-            while (iterBullet.hasNext())
-            {
-                Bullet bullet = iterBullet.next();
-                if (swordsman.collides(bullet.getBounds()))
-                {
-                    swordsman.dispose();
-                    iterEnemy.remove();
-                    iterBullet.remove();
-                    dropsGatchered++;
-                }
-            }
+
             if (swordsman.collides(hero.getBounds()))
                 gsm.set(new PlayState(gsm));
         }
-        //------------------------------------------------------------------------------------------------------------
-        while (is.hasNext())
+
+        while (itsh.hasNext())
         {
-            Shooter sh = is.next();
+            Shooter sh = itsh.next();
             if (camera.position.x - (camera.viewportWidth / 2) > sh.getPosition().x + sh.getTexture().getWidth())
             {
                 gsm.set(new PlayState(gsm));
             }
-            while (iterBullet.hasNext())
-            {
-                Bullet bullet = iterBullet.next();
-                if (sh.collides(bullet.getBounds()))
-                {
-                    sh.dispose();
-                    is.remove();
-                    iterBullet.remove();
-                    dropsGatchered++;
-                }
-            }
+
             if (sh.collides(hero.getBounds()))
                 gsm.set(new PlayState(gsm));
         }
-        //-------------------------------------------------------------------------------------------------------------
     }
-
+//----------------------------------------------------------------------------------------------------------------
     @Override
     public void update(float dt) {
         handleInput();
@@ -199,7 +191,8 @@ public class PlayState extends State {
         }
 
         borderMoveBullets();
-        collides();
+        collidesBullet();
+        collidesEnemy();
 
         camera.update();
     }
@@ -210,9 +203,10 @@ public class PlayState extends State {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         sb.draw(bg, camera.position.x - (camera.viewportWidth / 2), 0);
-        font.draw(sb, "Drops Collected: " + dropsGatchered,  camera.position.x - (camera.viewportWidth / 2) + 30, mainClass.HEIGHT - 30);
+        font.draw(sb, "Drops Collected: " + dropsGatchered,  camera.position.x + (camera.viewportWidth / 2) - 130, mainClass.HEIGHT - 24);
         sb.draw(jump, camera.position.x - (camera.viewportWidth / 2) + 15, 15, 94, 94);
         hero.drawHero(sb);
+        hero.drawHeroLive(sb, camera.position.x - (camera.viewportWidth / 2));
 
         for (Bullet bullet : bullets) {
             sb.draw(bullet.getBullet(), bullet.getPosition().x, bullet.getPosition().y);

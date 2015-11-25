@@ -3,12 +3,14 @@ package ru.kemgem.sprites;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 import ru.kemgem.mainClass;
+import ru.kemgem.states.PlayState;
 
 /**
  * redacted by Danil on 21.11.2015.
@@ -27,6 +29,9 @@ public class Hero {
     private Animation heroAnimation;//анимация
     private Texture hero;//содержит все спрайты в виде одного изображения
 
+    int countLive;
+    Texture liveTexture;
+
     private TextureRegion[] heroFrames;//массив всех спрайтов
     TextureRegion currentFrame;//текущий кадр
 
@@ -37,6 +42,9 @@ public class Hero {
         velosity = new Vector3(0, 0, 0);
 
         hero = new Texture(Gdx.files.internal("sprite-animation4.png"));//создание текстуры
+
+        countLive = 5;
+        liveTexture = new Texture("live.png");
 
         TextureRegion[][] tmp = TextureRegion.split(hero, hero.getWidth()/FRAME_COLS, hero.getHeight()/FRAME_ROWS);
 
@@ -95,6 +103,28 @@ public class Hero {
         currentFrame = heroAnimation.getKeyFrame(stateTime, true); // #16
         sb.draw(currentFrame, position.x, position.y); // #17
     }
+
+    public void drawHeroLive(SpriteBatch sb, float x) {
+        if (countLive <= 3) {
+            for (int i = 1; i <= countLive; i++) {
+                sb.draw(liveTexture, x + i * 27, mainClass.HEIGHT - 24*2,
+                        24, 24); // #17
+            }
+        }
+        else {
+            BitmapFont font = new BitmapFont();
+            font.draw(sb, "Live: " +countLive ,  x + 20, mainClass.HEIGHT - 24);
+        }
+    }
+
+    public void death()
+    {
+        countLive--;
+        if (countLive <= 0) {
+            mainClass.gsm.push(new PlayState(mainClass.gsm));
+        }
+    }
+
 
     public boolean collides(Rectangle player)
     {

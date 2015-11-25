@@ -4,6 +4,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+
+import java.util.Iterator;
+
+import ru.kemgem.sprites.barriers.Shooter;
+import ru.kemgem.sprites.barriers.Swordsman;
 
 /**
  * Created by Danil on 21.11.2015.
@@ -57,6 +63,41 @@ public class Bullet {
     public Rectangle getBounds(){
         return bounds;
     }
+
+    public boolean collidesSwordsman(Array<Swordsman> enemys)
+    {
+        Iterator<Swordsman> itsw = enemys.iterator();
+
+        while (itsw.hasNext())
+        {
+            Swordsman swordsman = itsw.next();
+            if (swordsman.collides(bounds))
+            {
+                swordsman.dispose();
+                itsw.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean collidesShooter(Array<Shooter> enemys)
+    {
+        Iterator<Shooter> itsh = enemys.iterator();
+
+        while (itsh.hasNext())
+        {
+            Shooter sh = itsh.next();
+            if (sh.collides(bounds))
+            {
+                sh.dispose();
+                itsh.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public void dispose() { bullet.dispose(); }
 }
