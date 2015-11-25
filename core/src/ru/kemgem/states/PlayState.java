@@ -1,14 +1,24 @@
 package ru.kemgem.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
 import java.util.Iterator;
+
 
 import ru.kemgem.mainClass;
 import ru.kemgem.sprites.Bullet;
@@ -21,12 +31,14 @@ import ru.kemgem.sprites.barriers.Swordsman;
 public class PlayState extends State {
 
     private static final int ENEMY_COUNT = 4;
+    private static final int FRAME_COLS = 3; // #1
+    private static final int FRAME_ROWS = 1; // #2
 
     BitmapFont font;
     int dropsGatchered;
 
     private Hero hero;
-    private Texture bg;
+
     private Texture jump;
 
     private Array<Swordsman> swordsmans;
@@ -38,12 +50,31 @@ public class PlayState extends State {
 
     long lastDropTime;
 
+    Animation bgAnimation;
+    private Texture bg;
+    TextureRegion[] bgFrames;
+    SpriteBatch spriteBatch;
+    TextureRegion currentFrame;
+
+    float stateTime;
+
     public PlayState(GameStateManager gsm) {
         super(gsm);
         touchPos = new Vector3();
         hero = new Hero(120, mainClass.HEIGHT/4);
         camera.setToOrtho(false, mainClass.WIDTH, mainClass.HEIGHT);
-        bg = new Texture("bg2.jpg");
+        bg = new Texture("bgf_1-3_2.jpg");
+        TextureRegion[][] tmp = TextureRegion.split(bg, bg.getWidth()/FRAME_COLS, bg.getHeight()/FRAME_ROWS); // #10
+        bgFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
+        int index = 0;
+        for (int i = 0; i < FRAME_ROWS; i++) {
+            for (int j = 0; j < FRAME_COLS; j++) {
+                bgFrames[index++] = tmp[i][j];
+            }
+        }
+        bgAnimation = new Animation(0.150f, bgFrames); // #11
+        spriteBatch = new SpriteBatch(); // #12
+        stateTime = 0f; // #13
         jump = new Texture("ButtonJump.png");
 
         font = new BitmapFont();
@@ -59,6 +90,8 @@ public class PlayState extends State {
         }
 
     }
+
+
 
     private void spawnEnemy(float x, float y) {
         Swordsman enemy = new Swordsman(x, y);
@@ -200,12 +233,23 @@ public class PlayState extends State {
     @Override
     public void render(SpriteBatch sb) {
 
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        stateTime += Gdx.graphics.getDeltaTime(); // #15
+        currentFrame = bgAnimation.getKeyFrame(stateTime, true); // #16
+        //sb.draw(currentFrame, position.x, position.y); // #17
+
+
+
+
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
-        sb.draw(bg, camera.position.x - (camera.viewportWidth / 2), 0);
+
+       // sb.draw(bg, camera.position.x - (camera.viewportWidth / 2), 0);
+        sb.draw(currentFrame, camera.position.x - (camera.viewportWidth / 2), 0);
         font.draw(sb, "Drops Collected: " + dropsGatchered,  camera.position.x + (camera.viewportWidth / 2) - 130, mainClass.HEIGHT - 24);
         sb.draw(jump, camera.position.x - (camera.viewportWidth / 2) + 15, 15, 94, 94);
         hero.drawHero(sb);
+
         hero.drawHeroLive(sb, camera.position.x - (camera.viewportWidth / 2));
 
         for (Bullet bullet : bullets) {
