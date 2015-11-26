@@ -17,7 +17,7 @@ import ru.kemgem.states.PlayState;
  */
 public class Hero {
     //константы
-    private static final int MOVEMENT = 50;//скорость
+    private static final int MOVEMENT = 150;//скорость
     private static final int GRAVITY = -15;//гравитация
     private static final int FRAME_COLS = 6;//справйты по вертикали
     private static final int FRAME_ROWS = 5;//по горизонтали

@@ -22,7 +22,7 @@ public class EnemyBullet {
     //и координаты конечнего направления
     public EnemyBullet(Vector3 X, float _x, float _y)
     {
-        //заполнение координаь
+        //заполнение координаt
         position = new Vector3(X);
         velosity = new Vector3(0, 0, 0);
 

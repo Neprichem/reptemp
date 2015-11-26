@@ -90,10 +90,6 @@ public class Shooter extends Enemy {
         sb.draw(currentFrame, position.x, position.y); // #17
     }
 
-    public void addHigh(HighEnemy he)
-    {
-        position.set(position.x, he.getTexture().getHeight() + 50, 0);
-    }
 
     /*
  "recruit" = 1

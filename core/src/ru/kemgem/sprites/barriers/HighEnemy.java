@@ -2,6 +2,7 @@ package ru.kemgem.sprites.barriers;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 /**
@@ -18,13 +19,20 @@ public class HighEnemy {
     {
         position = pos;
         texture = new Texture("Hide.jpg");
-        sh = new Shooter(position.x, position.y, type);
-        sh.addHigh(this);
+        sh = new Shooter(position.x, position.y + texture.getHeight(), type);
+        //sh.addHigh(this);
         flive = true;
     }
 
     public Texture getTexture(){return texture;}
     public Shooter getShooter(){return sh;}
+    public boolean getLive(){return flive;}
+    public Vector3 getPosition(){return position;}
+
+    public boolean collides(Rectangle player)
+    {
+        return player.overlaps(sh.bounds);
+    }
 
     public void death(){flive = false;}
 

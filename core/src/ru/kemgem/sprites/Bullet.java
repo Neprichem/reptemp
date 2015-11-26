@@ -107,11 +107,12 @@ public class Bullet {
 
         while (ithe.hasNext())
         {
-            HighEnemy sh = ithe.next();
-            if (sh.getShooter().collides(bounds))
+            HighEnemy he = ithe.next();
+            if (he.getLive())
+            if (he.getShooter().collides(bounds))
             {
-                sh.death();
-                ithe.remove();
+                he.death();
+               // ithe.remove();
               //  enemyDis.play(1.0f);
                 return true;
             }

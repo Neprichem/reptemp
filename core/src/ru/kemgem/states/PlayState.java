@@ -3,10 +3,8 @@ package ru.kemgem.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -17,17 +15,13 @@ import java.util.Iterator;
 import ru.kemgem.mainClass;
 import ru.kemgem.sprites.Bullet;
 import ru.kemgem.sprites.EnemyBullet;
+import ru.kemgem.sprites.Font;
 import ru.kemgem.sprites.Hero;
-import ru.kemgem.sprites.barriers.Enemy;
 import ru.kemgem.sprites.barriers.HighEnemy;
 import ru.kemgem.sprites.barriers.Shooter;
 import ru.kemgem.sprites.barriers.Swordsman;
 
 public class PlayState extends State {
-
-    private static final int ENEMY_COUNT = 4;
-    private static final int FRAME_COLS = 3; // #1
-    private static final int FRAME_ROWS = 1; // #2
 
     BitmapFont font;
     int dropsGatchered;
@@ -46,15 +40,9 @@ public class PlayState extends State {
 
     long lastDropTime;
 
-    Animation bgAnimation;
-    private Texture bg;
-    TextureRegion[] bgFrames;
-    SpriteBatch spriteBatch;
-    TextureRegion currentFrame;
+    private Font bg;
 
     private int rand;
-
-    float stateTime;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -64,19 +52,7 @@ public class PlayState extends State {
 
         rand  = MathUtils.random(0, 5);
 
-        bg = new Texture("bgf_1-3_2.jpg");
-        TextureRegion[][] tmp = TextureRegion.split(bg, bg.getWidth()/FRAME_COLS, bg.getHeight()/FRAME_ROWS); // #10
-
-        bgFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
-        int index = 0;
-        for (int i = 0; i < FRAME_ROWS; i++) {
-            for (int j = 0; j < FRAME_COLS; j++) {
-                bgFrames[index++] = tmp[i][j];
-            }
-        }
-        bgAnimation = new Animation(0.150f, bgFrames); // #11
-        spriteBatch = new SpriteBatch(); // #12
-        stateTime = 0f; // #13
+        bg = new Font();
 
         jump = new Texture("ButtonJump.png");
 
@@ -87,12 +63,6 @@ public class PlayState extends State {
         shooters = new Array<Shooter>();
         enemyBullets = new Array<EnemyBullet>();
         highEnemies = new Array<HighEnemy>();
-
-        for (int i = 0; i < ENEMY_COUNT; i++)
-        {
-            swordsmans.add(new Swordsman(mainClass.WIDTH + i*Enemy.ENEMY_WIDTH, mainClass.HEIGHT/4));
-        }
-
     }
 
     private void spawnEnemy(float x, float y) {
@@ -179,7 +149,7 @@ public class PlayState extends State {
             EnemyBullet bullet = iteb.next();
             if (hero.collides(bullet.getBounds()))
             {
-               // hero.death();
+                hero.death();
                 bullet.dispose();
                 iteb.remove();
             }
@@ -190,17 +160,23 @@ public class PlayState extends State {
     private void collidesEnemy() {
         Iterator<Swordsman> itsw = swordsmans.iterator();
         Iterator<Shooter> itsh = shooters.iterator();
+        Iterator<HighEnemy> ithe = highEnemies.iterator();
 
         while (itsw.hasNext())
         {
             Swordsman swordsman = itsw.next();
             if (camera.position.x - (camera.viewportWidth / 2) > swordsman.getPosition().x + swordsman.getTexture().getWidth())
             {
-                gsm.set(new PlayState(gsm));
+                hero.death();
+                swordsman.dispose();
+                itsw.remove();
             }
 
-            if (swordsman.collides(hero.getBounds()))
-                gsm.set(new PlayState(gsm));
+            if (swordsman.collides(hero.getBounds())){
+                hero.death();
+                swordsman.dispose();
+                itsw.remove();
+            }
         }
 
         while (itsh.hasNext())
@@ -208,11 +184,31 @@ public class PlayState extends State {
             Shooter sh = itsh.next();
             if (camera.position.x - (camera.viewportWidth / 2) > sh.getPosition().x + sh.getTexture().getWidth())
             {
-                gsm.set(new PlayState(gsm));
+                hero.death();
+                sh.dispose();
+                itsh.remove();
             }
 
-            if (sh.collides(hero.getBounds()))
-                gsm.set(new PlayState(gsm));
+            if (sh.collides(hero.getBounds())) {
+                hero.death();
+                sh.dispose();
+                itsh.remove();
+            }
+        }
+        while (ithe.hasNext())
+        {
+            HighEnemy he = ithe.next();
+            if (camera.position.x - (camera.viewportWidth / 2) > he.getPosition().x + he.getTexture().getWidth())
+            {
+                he.dispose();
+                ithe.remove();
+            }
+
+            if (he.collides(hero.getBounds()) && he.getLive()) {
+                he.death();
+                hero.death();
+            }
+
         }
     }
 //----------------------------------------------------------------------------------------------------------------
@@ -241,28 +237,38 @@ public class PlayState extends State {
     public void render(SpriteBatch sb) {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        stateTime += Gdx.graphics.getDeltaTime(); // #15
-        currentFrame = bgAnimation.getKeyFrame(stateTime, true); // #16
+
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
 
-        sb.draw(currentFrame, camera.position.x - (camera.viewportWidth / 2), 0,
-                camera.position.x + (camera.viewportWidth / 2), mainClass.HEIGHT);
-        font.draw(sb, "Drops Collected: " + dropsGatchered,  camera.position.x +
+        bg.drawFont(sb, camera.position.x - (camera.viewportWidth / 2));
+
+        font.draw(sb, "Drops Collected: " + dropsGatchered, camera.position.x +
                 (camera.viewportWidth / 2) - 130, mainClass.HEIGHT - 24);
+
         sb.draw(jump, camera.position.x - (camera.viewportWidth / 2) + 15, 15, 94, 94);
+
+        for (HighEnemy he : highEnemies) {
+            he.drawHighEnemy(sb);
+        }
+        for (Bullet bullet : bullets) {
+            sb.draw(bullet.getBullet(), bullet.getPosition().x, bullet.getPosition().y);
+        }
+        for (EnemyBullet eb : enemyBullets) {
+            sb.draw(eb.getBullet(), eb.getPosition().x, eb.getPosition().y);
+        }
+        for (Shooter sh : shooters) {
+            sh.drawShooter(sb);
+        }
+        for (Swordsman swordsman : swordsmans) {
+            sb.draw(swordsman.getTexture(), swordsman.getPosition().x, swordsman.getPosition().y);
+        }
 
         hero.drawHero(sb);
         hero.drawHeroLive(sb, camera.position.x - (camera.viewportWidth / 2));
 
-        for (Bullet bullet : bullets) {
-            sb.draw(bullet.getBullet(), bullet.getPosition().x, bullet.getPosition().y);
-        }
-
-        for (EnemyBullet eb : enemyBullets) {
-            sb.draw(eb.getBullet(), eb.getPosition().x, eb.getPosition().y);
-        }
-
+        sb.end();
+        rand  = MathUtils.random(0, 5);
         if(TimeUtils.nanoTime() - lastDropTime > 1000000000)
         {
             switch (rand)
@@ -286,26 +292,17 @@ public class PlayState extends State {
             for (Shooter shooter : shooters) {
                 shooter.shot(enemyBullets, hero);
             }
+
+            for (HighEnemy shooter : highEnemies) {
+                shooter.getShooter().shot(enemyBullets, hero);
+            }
         }
 
-        for (Swordsman swordsman : swordsmans) {
-            sb.draw(swordsman.getTexture(), swordsman.getPosition().x, swordsman.getPosition().y);
-        }
-        for (Shooter sh : shooters) {
-           // sb.draw(sh.getTexture(), sh.getPosition().x, sh.getPosition().y);
-            sh.drawShooter(sb);
-        }
-        for (HighEnemy he : highEnemies) {
-            // sb.draw(sh.getTexture(), sh.getPosition().x, sh.getPosition().y);
-            he.drawHighEnemy(sb);
-        }
-
-        sb.end();
-        rand = 4;
-       // rand  = MathUtils.random(0, 5);
 
     }
 
     @Override
-    public void dispose() {}
+    public void dispose() {
+        bg.dispose();
+    }
 }
