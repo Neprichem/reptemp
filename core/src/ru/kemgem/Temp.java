@@ -63,7 +63,7 @@ public class Temp extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         handleInput();
         batch.begin();
-        font.draw(batch, "Drops Collected: " + dropsGatchered, camera.position.x - (camera.viewportWidth / 2) + 30, mainClass.HEIGHT - 30);
+        font.draw(batch, "Drops Collected: " + dropsGatchered, camera.position.x - (camera.viewportWidth / 2) + 30, MainClass.HEIGHT - 30);
 
         batch.draw(img, 0, 0);
         for (Bullet bullet : bullets) {

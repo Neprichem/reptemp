@@ -3,7 +3,7 @@ package ru.kemgem.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import ru.kemgem.mainClass;
+import ru.kemgem.MainClass;
 
 public class HtmlLauncher extends GwtApplication {
 
@@ -14,6 +14,6 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener getApplicationListener () {
-                return new mainClass();
+                return new MainClass();
         }
 }

@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.Iterator;
 
-import ru.kemgem.mainClass;
+import ru.kemgem.MainClass;
 import ru.kemgem.sprites.Bullet;
 import ru.kemgem.sprites.EnemyBullet;
 import ru.kemgem.sprites.Font;
@@ -24,7 +24,6 @@ import ru.kemgem.sprites.barriers.Swordsman;
 public class PlayState extends State {
 
     BitmapFont font;
-    int dropsGatchered;
 
     private Hero hero;
 
@@ -47,8 +46,8 @@ public class PlayState extends State {
     public PlayState(GameStateManager gsm) {
         super(gsm);
         touchPos = new Vector3();
-        hero = new Hero(120, mainClass.HEIGHT/4);
-        camera.setToOrtho(false, mainClass.WIDTH, mainClass.HEIGHT);
+        hero = new Hero(120, MainClass.HEIGHT/4);
+        camera.setToOrtho(false, MainClass.WIDTH, MainClass.HEIGHT);
 
         rand  = MathUtils.random(0, 5);
 
@@ -109,7 +108,7 @@ public class PlayState extends State {
         while (iterBullet.hasNext())
         {
             Bullet bullet = iterBullet.next();
-            if (bullet.getPosition().x > hero.getPosition().x + mainClass.WIDTH)
+            if (bullet.getPosition().x > hero.getPosition().x + MainClass.WIDTH)
             {
                 bullet.dispose();
                 iterBullet.remove();
@@ -119,8 +118,8 @@ public class PlayState extends State {
         while (eniterBullet.hasNext())
         {
             EnemyBullet eb = eniterBullet.next();
-            if (eb.getPosition().x > hero.getPosition().x + mainClass.WIDTH ||
-                    eb.getPosition().x < hero.getPosition().x - mainClass.WIDTH)
+            if (eb.getPosition().x > hero.getPosition().x + MainClass.WIDTH ||
+                    eb.getPosition().x < hero.getPosition().x - MainClass.WIDTH)
             {
                 eb.dispose();
                 eniterBullet.remove();
@@ -141,7 +140,7 @@ public class PlayState extends State {
             {
                 b.dispose();
                 itb.remove();
-                dropsGatchered++;
+                MainClass.score++;
             }
         }
         while (iteb.hasNext())
@@ -243,8 +242,8 @@ public class PlayState extends State {
 
         bg.drawFont(sb, camera.position.x - (camera.viewportWidth / 2));
 
-        font.draw(sb, "Drops Collected: " + dropsGatchered, camera.position.x +
-                (camera.viewportWidth / 2) - 130, mainClass.HEIGHT - 24);
+        font.draw(sb, "Drops Collected: " + MainClass.score, camera.position.x +
+                (camera.viewportWidth / 2) - 130, MainClass.HEIGHT - 24);
 
         sb.draw(jump, camera.position.x - (camera.viewportWidth / 2) + 15, 15, 94, 94);
 
@@ -274,19 +273,19 @@ public class PlayState extends State {
             switch (rand)
             {
                 case 1:
-                    spawnShooter(hero.getPosition().x + mainClass.WIDTH + 50, mainClass.HEIGHT / 4, 1);
+                    spawnShooter(hero.getPosition().x + MainClass.WIDTH + 50, MainClass.HEIGHT / 4, 1);
                     break;
                 case 0:
-                    spawnEnemy(hero.getPosition().x + mainClass.WIDTH, mainClass.HEIGHT / 4);
+                    spawnEnemy(hero.getPosition().x + MainClass.WIDTH, MainClass.HEIGHT / 4);
                     break;
                 case 2:
-                    spawnShooter(hero.getPosition().x + mainClass.WIDTH + 50, mainClass.HEIGHT / 4, 2);
+                    spawnShooter(hero.getPosition().x + MainClass.WIDTH + 50, MainClass.HEIGHT / 4, 2);
                     break;
                 case 3:
-                    spawnHighEnemy(hero.getPosition().x + mainClass.WIDTH + 50, mainClass.HEIGHT / 4, 1);
+                    spawnHighEnemy(hero.getPosition().x + MainClass.WIDTH + 50, MainClass.HEIGHT / 4, 1);
                     break;
                 case 4:
-                    spawnHighEnemy(hero.getPosition().x + mainClass.WIDTH + 50, mainClass.HEIGHT / 4, 2);
+                    spawnHighEnemy(hero.getPosition().x + MainClass.WIDTH + 50, MainClass.HEIGHT / 4, 2);
                     break;
             }
             for (Shooter shooter : shooters) {

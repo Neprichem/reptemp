@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import ru.kemgem.mainClass;
+import ru.kemgem.MainClass;
 import ru.kemgem.sprites.EnemyBullet;
 import ru.kemgem.sprites.Hero;
 
@@ -80,7 +80,7 @@ public class Shooter extends Enemy {
     }
 
     public void reposition(float x){
-        position.set(x, mainClass.HEIGHT / 4, 0);
+        position.set(x, MainClass.HEIGHT / 4, 0);
         bounds.setPosition(position.x, position.y);
     }
 

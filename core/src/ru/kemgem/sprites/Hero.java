@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-import ru.kemgem.mainClass;
-import ru.kemgem.states.PlayState;
+import ru.kemgem.MainClass;
+import ru.kemgem.states.GameOver;
 
 /**
  * redacted by Danil on 21.11.2015.
@@ -82,8 +82,8 @@ public class Hero {
             velosity.add(0, GRAVITY, 0);//действие гравитации
         velosity.scl(dt);
         position.add(MOVEMENT * dt, velosity.y, 0);//изменение координат движения
-        if (position.y < mainClass.HEIGHT/4)//граница пола, чтобы не проваливался
-            position.y = mainClass.HEIGHT/4;
+        if (position.y < MainClass.HEIGHT/4)//граница пола, чтобы не проваливался
+            position.y = MainClass.HEIGHT/4;
         velosity.scl(1 / dt);
         bounds.setPosition(position.x, position.y);
     }
@@ -107,13 +107,13 @@ public class Hero {
     public void drawHeroLive(SpriteBatch sb, float x) {
         if (countLive <= 3) {
             for (int i = 1; i <= countLive; i++) {
-                sb.draw(liveTexture, x + i * 27, mainClass.HEIGHT - 24*2,
+                sb.draw(liveTexture, x + i * 27, MainClass.HEIGHT - 24*2,
                         24, 24); // #17
             }
         }
         else {
             BitmapFont font = new BitmapFont();
-            font.draw(sb, "Live: " +countLive ,  x + 20, mainClass.HEIGHT - 24);
+            font.draw(sb, "Live: " +countLive ,  x + 20, MainClass.HEIGHT - 24);
         }
     }
 
@@ -121,7 +121,7 @@ public class Hero {
     {
         countLive--;
         if (countLive <= 0) {
-            mainClass.gsm.push(new PlayState(mainClass.gsm));
+            MainClass.gsm.push(new GameOver(MainClass.gsm));
         }
     }
 

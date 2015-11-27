@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-import ru.kemgem.mainClass;
+import ru.kemgem.MainClass;
 
 /**
  * Created by Danil on 24.11.2015.
@@ -27,7 +27,7 @@ public class Swordsman extends Enemy {
     }
 
     public void reposition(float x){
-        position.set(x, mainClass.HEIGHT/4, 0);
+        position.set(x, MainClass.HEIGHT/4, 0);
         bounds.setPosition(position.x, position.y);
     }
 

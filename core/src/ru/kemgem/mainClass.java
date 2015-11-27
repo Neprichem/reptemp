@@ -9,7 +9,7 @@ import ru.kemgem.states.GameStateManager;
 import ru.kemgem.states.MenuState;
 
 
-public class mainClass extends ApplicationAdapter {
+public class MainClass extends ApplicationAdapter {
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 480;
 
@@ -18,8 +18,11 @@ public class mainClass extends ApplicationAdapter {
 	public static GameStateManager gsm;
 	private SpriteBatch batch;
 
+	public static int score;
+
 	@Override
 	public void create () {
+		score = 0;
 		batch = new SpriteBatch();
 		gsm = new GameStateManager();
 		Gdx.gl.glClearColor(1, 0, 0, 1);
