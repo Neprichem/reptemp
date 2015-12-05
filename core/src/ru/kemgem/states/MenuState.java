@@ -39,8 +39,7 @@ public class MenuState extends State {
 
             if (touchPos.x > MainClass.WIDTH  - btnPlay.getWidth() - 15 &&  touchPos.x < MainClass.WIDTH - 15
                     && touchPos.y > (MainClass.HEIGHT/2) && touchPos.y < (MainClass.HEIGHT/2) + btnPlay.getHeight()) {
-                gsm.set(new PlayState(gsm));
-                MainClass.score = 0;
+                gsm.set(new ChangeGameState(gsm));
             }
 
             if (touchPos.x > MainClass.WIDTH  - btnScore.getWidth() - 15 &&  touchPos.x < MainClass.WIDTH - 15

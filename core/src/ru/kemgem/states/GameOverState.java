@@ -13,14 +13,14 @@ import ru.kemgem.MainClass;
 /**
  * Created by Danil on 27.11.2015.
  */
-public class GameOver extends State {
+public class GameOverState extends State {
 
     private Texture background;
     private BitmapFont font;
     private Texture ng, menu;
     Vector3 touchPos;
 
-    public GameOver(GameStateManager gsm){
+    public GameOverState(GameStateManager gsm){
         super(gsm);
         touchPos = new Vector3();
         camera.setToOrtho(false, MainClass.WIDTH, MainClass.HEIGHT);
@@ -41,8 +41,19 @@ public class GameOver extends State {
             camera.unproject(touchPos);
             if (touchPos.x > camera.position.x - ng.getWidth()/2 &&  touchPos.x < camera.position.x + ng.getWidth()/2
             && touchPos.y > MainClass.HEIGHT/2 && touchPos.y < MainClass.HEIGHT/2 + ng.getHeight()) {
-                MainClass.gsm.push(new PlayState(MainClass.gsm));
-                MainClass.score = 0;
+                switch (MainClass.typeGame) {
+                    case 2: {
+                        MainClass.gsm.push(new PlayState(MainClass.gsm));
+                        MainClass.score = 0;
+                        break;
+                    }
+                    case 1:
+                    {
+                        MainClass.gsm.push(new FreeRunState(MainClass.gsm));
+                        MainClass.score = 0;
+                        break;
+                    }
+                }
             }
             if (touchPos.x > camera.position.x - menu.getWidth()/2 &&  touchPos.x < camera.position.x
                     + menu.getWidth()/2 && touchPos.y > MainClass.HEIGHT/2 - ng.getHeight() -15 &&

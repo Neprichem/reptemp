@@ -19,6 +19,7 @@ public class MainClass extends ApplicationAdapter {
 	private SpriteBatch batch;
 
 	public static int score;
+	public static int typeGame;
 
 	@Override
 	public void create () {

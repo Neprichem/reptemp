@@ -8,8 +8,10 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.Iterator;
 
+import ru.kemgem.MainClass;
 import ru.kemgem.sprites.barriers.HighEnemy;
 import ru.kemgem.sprites.barriers.Shooter;
+import ru.kemgem.sprites.barriers.StateBarriers;
 import ru.kemgem.sprites.barriers.Swordsman;
 
 /**
@@ -78,6 +80,7 @@ public class Bullet {
             {
                 swordsman.dispose();
                 itsw.remove();
+                MainClass.score++;
                 return true;
             }
         }
@@ -95,11 +98,28 @@ public class Bullet {
             {
                 sh.dispose();
                 itsh.remove();
+                MainClass.score++;
                 return true;
             }
         }
         return false;
     }
+
+    public boolean collidesBarriers(Array<StateBarriers> sBars)
+    {
+        Iterator<StateBarriers> itsh = sBars.iterator();
+
+        while (itsh.hasNext())
+        {
+            StateBarriers sb = itsh.next();
+            if (sb.collides(bounds))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public boolean collidesHighEnemy(Array<HighEnemy> enemys)
     {
@@ -112,6 +132,7 @@ public class Bullet {
             if (he.getShooter().collides(bounds))
             {
                 he.death();
+                MainClass.score++;
                // ithe.remove();
               //  enemyDis.play(1.0f);
                 return true;

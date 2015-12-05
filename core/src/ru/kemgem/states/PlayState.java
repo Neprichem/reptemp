@@ -19,6 +19,7 @@ import ru.kemgem.sprites.Font;
 import ru.kemgem.sprites.Hero;
 import ru.kemgem.sprites.barriers.HighEnemy;
 import ru.kemgem.sprites.barriers.Shooter;
+import ru.kemgem.sprites.barriers.StateBarriers;
 import ru.kemgem.sprites.barriers.Swordsman;
 
 public class PlayState extends State {
@@ -34,8 +35,10 @@ public class PlayState extends State {
     private Array<Bullet> bullets;
     private Array<EnemyBullet> enemyBullets;
     private Array<HighEnemy> highEnemies;
+    private Array<StateBarriers> stateBarriers;
 
     Vector3 touchPos;
+    private float posY;
 
     long lastDropTime;
 
@@ -57,11 +60,18 @@ public class PlayState extends State {
 
         font = new BitmapFont();
 
+        posY = MainClass.HEIGHT/4;
+
         swordsmans = new Array<Swordsman>();
         bullets = new Array<Bullet>();
         shooters = new Array<Shooter>();
         enemyBullets = new Array<EnemyBullet>();
         highEnemies = new Array<HighEnemy>();
+        stateBarriers = new Array<StateBarriers>();
+
+
+        stateBarriers.add(new StateBarriers(new Vector3(hero.getPosition().x + MainClass.WIDTH, MainClass.HEIGHT/4, 0), 0));
+        swordsmans.add(new Swordsman(hero.getPosition().x + MainClass.WIDTH + 150, MainClass.HEIGHT/4));
     }
 
     private void spawnEnemy(float x, float y) {
@@ -78,6 +88,11 @@ public class PlayState extends State {
 
     private void spawnHighEnemy(float x, float y, int type) {
         highEnemies.add(new HighEnemy(new Vector3(x, y, 0), type));
+        lastDropTime = TimeUtils.nanoTime();
+    }
+
+    private void spawnStateBarriers(float x, float y, int type) {
+        stateBarriers.add(new StateBarriers(new Vector3(x, y, 0), type));
         lastDropTime = TimeUtils.nanoTime();
     }
 
@@ -136,11 +151,11 @@ public class PlayState extends State {
         while (itb.hasNext())
         {
             Bullet b = itb.next();
-            if (b.collidesSwordsman(swordsmans) || b.collidesShooter(shooters) || b.collidesHighEnemy(highEnemies))
+            if (b.collidesSwordsman(swordsmans) || b.collidesShooter(shooters) || b.collidesHighEnemy(highEnemies)
+                    || b.collidesBarriers(stateBarriers))
             {
                 b.dispose();
                 itb.remove();
-                MainClass.score++;
             }
         }
         while (iteb.hasNext())
@@ -210,12 +225,47 @@ public class PlayState extends State {
 
         }
     }
+
+    private void collidesBarriersForObject(float dt)
+    {
+        boolean f = true;
+        Iterator<StateBarriers> itsb = stateBarriers.iterator();
+        while (itsb.hasNext())
+        {
+            StateBarriers sBar = itsb.next();
+            if (hero.getPosition().x + hero.getWidth() > sBar.getPosition().x && hero.getPosition().x
+                             < sBar.getTexture().getWidth() + sBar.getPosition().x)
+            {
+                if (hero.getPosition().y >= sBar.getPosition().y + sBar.getTexture().getHeight())
+                {
+                    posY = sBar.getPosition().y + sBar.getTexture().getHeight();
+                    f = false;
+                }
+            }
+            if (camera.position.x - (camera.viewportWidth / 2) > sBar.getPosition().x + sBar.getTexture().getWidth())
+            {
+                sBar.dispose();
+                itsb.remove();
+            }
+
+            for (Swordsman sw: swordsmans)
+            if (sw.getPosition().x + sw.getTexture().getWidth() > sBar.getPosition().x && sw.getPosition().x
+                    < sBar.getTexture().getWidth() + sBar.getPosition().x)
+                sw.setPositionY(sBar.getPosition().y + sBar.getTexture().getHeight());
+            else sw.setPositionY(MainClass.HEIGHT/4);
+        }
+        if (f) posY = MainClass.HEIGHT/4;
+    }
 //----------------------------------------------------------------------------------------------------------------
     @Override
     public void update(float dt) {
         handleInput();
-        hero.update(dt);
+        collidesBarriersForObject(dt);
+
+        hero.update(dt, posY);
         camera.position.x = hero.getPosition().x + 280;
+
+        for (Swordsman sw: swordsmans) sw.update(dt);
 
         for (Bullet bullet : bullets) {
             bullet.update(dt);
@@ -247,6 +297,10 @@ public class PlayState extends State {
 
         sb.draw(jump, camera.position.x - (camera.viewportWidth / 2) + 15, 15, 94, 94);
 
+
+        for (StateBarriers sBarriers : stateBarriers) {
+            sb.draw(sBarriers.getTexture(), sBarriers.getPosition().x, sBarriers.getPosition().y);
+        }
         for (HighEnemy he : highEnemies) {
             he.drawHighEnemy(sb);
         }
@@ -267,8 +321,10 @@ public class PlayState extends State {
         hero.drawHeroLive(sb, camera.position.x - (camera.viewportWidth / 2));
 
         sb.end();
-        rand  = MathUtils.random(0, 5);
-        if(TimeUtils.nanoTime() - lastDropTime > 1000000000)
+
+        rand  = MathUtils.random(0, 6);
+        //rand = 5;
+        if(TimeUtils.nanoTime() - lastDropTime > 1000000000 )
         {
             switch (rand)
             {
@@ -287,6 +343,9 @@ public class PlayState extends State {
                 case 4:
                     spawnHighEnemy(hero.getPosition().x + MainClass.WIDTH + 50, MainClass.HEIGHT / 4, 2);
                     break;
+                case 5:
+                    spawnStateBarriers(hero.getPosition().x + MainClass.WIDTH + 50, MainClass.HEIGHT / 4, 2);
+                    break;
             }
             for (Shooter shooter : shooters) {
                 shooter.shot(enemyBullets, hero);
@@ -295,13 +354,34 @@ public class PlayState extends State {
             for (HighEnemy shooter : highEnemies) {
                 shooter.getShooter().shot(enemyBullets, hero);
             }
+
         }
 
 
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         bg.dispose();
+        hero.dispose();
+        for (HighEnemy he : highEnemies) {
+            he.dispose();;
+        }
+        for (Bullet bullet : bullets) {
+            bullet.dispose();
+        }
+        for (EnemyBullet eb : enemyBullets) {
+            eb.dispose();
+        }
+        for (Shooter sh : shooters) {
+            sh.dispose();
+        }
+        for (Swordsman swordsman : swordsmans) {
+            swordsman.dispose();
+        }
+        for (StateBarriers sBarriers : stateBarriers) {
+            sBarriers.dispose();
+        }
     }
 }

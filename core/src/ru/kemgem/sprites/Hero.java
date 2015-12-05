@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 import ru.kemgem.MainClass;
-import ru.kemgem.states.GameOver;
+import ru.kemgem.states.GameOverState;
 
 /**
  * redacted by Danil on 21.11.2015.
@@ -41,7 +41,7 @@ public class Hero {
         position = new Vector3(x, y, 0);
         velosity = new Vector3(0, 0, 0);
 
-        hero = new Texture(Gdx.files.internal("sprite-animation4.png"));//создание текстуры
+        hero = new Texture(Gdx.files.internal("hero.png"));//создание текстуры
 
         countLive = 5;
         liveTexture = new Texture("live.png");
@@ -64,26 +64,46 @@ public class Hero {
         bounds = new Rectangle(x, y, hero.getWidth()/FRAME_COLS, hero.getHeight()/FRAME_ROWS);
     }
 
-    public Vector3 getPosition() {
-        return position;
+    public Hero(Hero h){
+        position = new Vector3(h.getPosition());
+        velosity = new Vector3(0, 0, 0);
+
+        hero = new Texture(Gdx.files.internal("hero.png"));//создание текстуры
+
+        countLive = 5;
+        liveTexture = new Texture("live.png");
+
+        TextureRegion[][] tmp = TextureRegion.split(hero, hero.getWidth()/FRAME_COLS, hero.getHeight()/FRAME_ROWS);
+
+        heroFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
+        int index = 0;
+
+        //создание двумерного массива спрайтов
+        for (int i = 0; i < FRAME_ROWS; i++) {
+            for (int j = 0; j < FRAME_COLS; j++) {
+                heroFrames[index++] = tmp[i][j];
+            }
+        }
+
+        // это типа должен быть конструктор аниматион
+        heroAnimation = new Animation(0.025f, heroFrames);
+        stateTime = 0f; // обновление времени
+        bounds = new Rectangle(h.getPosition().x,h.getPosition().y, hero.getWidth()/FRAME_COLS, hero.getHeight()/FRAME_ROWS);
     }
 
-    public Texture getHero() {
-        return hero;
-    }
+    public Vector3 getPosition() { return position;}
+    public void setPositionY(float y) { position.y = y;}
 
-    public TextureRegion getHeroRegion() {
-        return currentFrame;
-    }
+    public float getWidth(){return hero.getWidth()/FRAME_COLS;}
 
     //обработчик движения
-    public void update(float dt){
+    public void update(float dt, float _y){
         if (position.y > 0)
             velosity.add(0, GRAVITY, 0);//действие гравитации
         velosity.scl(dt);
         position.add(MOVEMENT * dt, velosity.y, 0);//изменение координат движения
-        if (position.y < MainClass.HEIGHT/4)//граница пола, чтобы не проваливался
-            position.y = MainClass.HEIGHT/4;
+        if (position.y < _y)//граница пола, чтобы не проваливался
+            position.y = _y;
         velosity.scl(1 / dt);
         bounds.setPosition(position.x, position.y);
     }
@@ -121,8 +141,14 @@ public class Hero {
     {
         countLive--;
         if (countLive <= 0) {
-            MainClass.gsm.push(new GameOver(MainClass.gsm));
+            MainClass.gsm.push(new GameOverState(MainClass.gsm));
         }
+    }
+
+    public void dispose()
+    {
+        liveTexture.dispose();
+        hero.dispose();
     }
 
 
