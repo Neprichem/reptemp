@@ -68,9 +68,39 @@ public class GameScene {
         swordsmans.add(new Swordsman(new Vector3(x + MainClass.WIDTH * 2 + 300, MainClass.HEIGHT / 4, 0)));
     }
 
+    public float collidesBarriersForObject(Hero hero, OrthographicCamera camera)
+    {
+        boolean f = true;
+        Iterator<StateBarriers> itsb = stateBarriers.iterator();
+        while (itsb.hasNext())
+        {
+            StateBarriers sBar = itsb.next();
+            if (camera.position.x - (camera.viewportWidth / 2) > sBar.getPosition().x + sBar.getTexture().getWidth())
+            {
+                sBar.dispose();
+                itsb.remove();
+            }
+
+            for (Swordsman sw: swordsmans)
+                if (sw.getPosition().x + sw.getTexture().getWidth() > sBar.getPosition().x && sw.getPosition().x
+                        < sBar.getTexture().getWidth() + sBar.getPosition().x)
+                    sw.setPositionY(sBar.getPosition().y + sBar.getTexture().getHeight());
+                else sw.setPositionY(MainClass.HEIGHT/4);
+            if (hero.getPosition().x + hero.getWidth() > sBar.getPosition().x && hero.getPosition().x
+                    < sBar.getTexture().getWidth() + sBar.getPosition().x)
+            {
+                if (hero.getPosition().y >= sBar.getPosition().y + sBar.getTexture().getHeight())
+                {
+                    f = false;
+                    return sBar.getPosition().y + sBar.getTexture().getHeight();
+                }
+            }
+        }
+        return MainClass.HEIGHT/4;
+    }
+
     public void collidesSceneToHero(Hero hero, OrthographicCamera camera)
     {
-
         Iterator<Swordsman> itsw = swordsmans.iterator();
         Iterator<Shooter> itsh = shooters.iterator();
         Iterator<HighEnemy> ithe = highEnemies.iterator();

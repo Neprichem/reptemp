@@ -75,16 +75,18 @@ public class FreeRunState extends State {
     @Override
     public void update(float dt) {
         handleInput();
-        hero.update(dt, posY);
-        camera.position.x = hero.getPosition().x + 280;
 
         gS.collidesSceneToHero(hero, camera);
+        posY = gS.collidesBarriersForObject(hero, camera);
         gS.collidesSceneToBullets(bullets);
         gS.update(dt, camera.position.x - (camera.viewportWidth / 2), hero);
 
         for (Bullet bullet : bullets) {
             bullet.update(dt);
         }
+
+        hero.update(dt, posY);
+        camera.position.x = hero.getPosition().x + 280;
 
         camera.update();
     }
